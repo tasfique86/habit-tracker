@@ -1,8 +1,9 @@
 import { Text, View } from "react-native";
 import { Button } from "react-native-paper";
+import { useAuth } from "../authProvider";
 
 export default function Index() {
-
+  const { signOut } = useAuth();
   return (
     <View
       style={{
@@ -12,7 +13,7 @@ export default function Index() {
       }}
     >
       <Text>Welcome To Our Project</Text>
-      <Button mode='text' icon="logout">Sign Out</Button>
+      <Button mode='text' onPress={signOut} icon="logout">Sign Out</Button>
     </View>
   );
 }
