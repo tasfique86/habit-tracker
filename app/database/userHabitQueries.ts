@@ -43,3 +43,9 @@ export async function getUserHabits(
     );
     return result as UserHabit[];
   }
+
+export async function deleteUserHabit(habitId: number): Promise<void> {
+    const db = await getDatabase();
+    await db.runAsync(
+      `DELETE FROM usersHabit1 WHERE id = ?`,habitId)
+}

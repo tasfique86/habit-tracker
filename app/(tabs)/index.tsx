@@ -4,7 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import { ActivityIndicator, ScrollView, StyleSheet, View } from "react-native";
 import { Button, Surface, Text } from "react-native-paper";
 import { useAuth } from "../authProvider";
-import { getUserHabits } from "../database/userHabitQueries";
+import { deleteUserHabit, getUserHabits } from "../database/userHabitQueries";
 import { UserHabit } from "../types/userHabit";
 
 export default function Index() {
@@ -78,6 +78,14 @@ export default function Index() {
   //     loadUsers();
   //   }, [user?.email])
   // );
+  const handleDelete= async(habitId: number) => {
+    try {
+      await deleteUserHabit(habitId);
+      setUserHabits((prevHabits) => prevHabits.filter((habit) => habit.id !== habitId));
+    } catch (error) {
+      console.error("Error deleting habit:", error);
+    }
+  }
 
   if (loading) {
     return (
@@ -98,16 +106,25 @@ export default function Index() {
         </Button>
       </View>
       <ScrollView showsVerticalScrollIndicator={false}>
-        { userHabits?.length === 0 ? (
+        {userHabits?.length === 0 ? (
           <View style={styles.emptyState}>
-            <Text style={styles.emptyStateText}>No habits found. Please add some habits.</Text>
+            <Text style={styles.emptyStateText}>
+              No habits found. Please add some habits.
+            </Text>
           </View>
-          
-        ):
-          (userHabits.map((habit, key) => (
+        ) : (
+          userHabits.map((habit, key) => (
             <Surface key={key} style={styles.card}>
               <View style={styles.cardContent}>
-                <Text style={styles.cardTitle}>{habit.title}</Text>
+                <View style={styles.cardHeader}>
+                  <Text style={styles.cardTitle}>{habit.title}</Text>
+                  <MaterialCommunityIcons
+                    name="trash-can-outline"
+                    size={22}
+                    color="red"
+                    onPress={() => handleDelete(habit.id)}
+                  />
+                </View>
                 <Text style={styles.cardDescription}>{habit.description}</Text>
                 <View style={styles.cardFooter}>
                   <View style={styles.streakBadge}>
@@ -126,8 +143,8 @@ export default function Index() {
                 </View>
               </View>
             </Surface>
-          )))
-        }
+          ))
+        )}
       </ScrollView>
     </View>
   );
@@ -246,4 +263,10 @@ const styles = StyleSheet.create({
     alignItems: "center",
     padding: 24,
   },
+  cardHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 4,
+  }
 });
