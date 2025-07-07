@@ -2,42 +2,38 @@ import { Stack, useRouter, useSegments } from "expo-router";
 import { useEffect } from "react";
 import AuthProvider, { useAuth } from "./authProvider";
 
+function RouterGuard({ children }: { children: React.ReactNode }) {
+  const router = useRouter();
+  const segments = useSegments();
+  const { user, isLoadingUser } = useAuth();
 
-function RouterGuard({ children } :{ children: React.ReactNode }) {
-
-  const router =useRouter();
-  const {user, isLoadingUser} = useAuth();// Replace with actual authentication logic
-
-  const segments = useSegments()
-  
   useEffect(() => {
+    if (isLoadingUser) return;
+
     const isAuthRoute = segments[0] === "auth";
 
-    // if(!user)
-    //   router.replace("/auth");
-
-    if (!user && !isAuthRoute && !isLoadingUser) {
+    if (!user && !isAuthRoute) {
       router.replace("/auth");
-    }else if (user && isAuthRoute && !isLoadingUser) {
+    } else if (user && isAuthRoute) {
       router.replace("/");
     }
-  }, [user, segments]);
+  }, [user, segments, isLoadingUser]);
+
+  // Don't render anything until user loading is done
+  if (isLoadingUser) return null;
+
   return <>{children}</>;
 }
 
 export default function RootLayout() {
-  return( 
-      <AuthProvider>
+  return (
+    <AuthProvider>
       <RouterGuard>
-      <Stack >
-        <Stack.Screen name="(tabs)" options={{ headerShown : false}} />  
-      </Stack>
-    </RouterGuard>
+        <Stack>
+          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+          <Stack.Screen name="auth" options={{ headerShown: false }} />
+        </Stack>
+      </RouterGuard>
     </AuthProvider>
- 
-  
-    
-  
-);
-
+  );
 }

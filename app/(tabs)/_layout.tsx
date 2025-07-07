@@ -1,16 +1,42 @@
-import AntDesign from '@expo/vector-icons/AntDesign';
-import Entypo from '@expo/vector-icons/Entypo';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Tabs } from "expo-router";
-export default function TabsLayout() {
-  return( 
-  <Tabs screenOptions={{ tabBarActiveTintColor: "tomato"}}>
-   
-    <Tabs.Screen name="index" options={{ title: "Abc" ,tabBarIcon: ({color,focused})=>
-      {return focused ? (<Entypo name="home" size={24} color={color}/>) : (<AntDesign name="home" size={24} color="black" />)}
-    ,} } />
-    <Tabs.Screen name="login" options={{ title: "Login"}} />
-  </Tabs>
-  
-);
+import React, { useEffect } from 'react';
+import { getDatabase } from '../database/database';
 
+export default function TabsLayout() {
+  useEffect(() => {
+    getDatabase();
+  }, []);
+
+  return (
+    <Tabs screenOptions={{ tabBarActiveTintColor: "tomato" }}>
+      <Tabs.Screen
+        name="index"
+        options={{
+          title: "Today's Habits",
+          tabBarIcon: ({ color }) => (
+            <MaterialCommunityIcons name="calendar-today" size={24} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="streaks"
+        options={{
+          title: "Streaks",
+          tabBarIcon: ({ color }) => (
+            <MaterialCommunityIcons name="chart-line" size={24} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="add-habit"
+        options={{
+          title: "Add Habit",
+          tabBarIcon: ({ color }) => (
+            <MaterialCommunityIcons name="plus-circle" size={24} color={color} />
+          ),
+        }}
+      />
+    </Tabs>
+  );
 }
