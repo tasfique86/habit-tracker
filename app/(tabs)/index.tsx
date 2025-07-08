@@ -4,7 +4,11 @@ import { useCallback, useEffect, useState } from "react";
 import { ActivityIndicator, ScrollView, StyleSheet, View } from "react-native";
 import { Button, Surface, Text } from "react-native-paper";
 import { useAuth } from "../authProvider";
-import { deleteUserHabit, getUserHabits } from "../database/userHabitQueries";
+import {
+  deleteUserHabit,
+  getUserHabits,
+  updateHabitStreak,
+} from "../database/userHabitQueries";
 import { UserHabit } from "../types/userHabit";
 
 export default function Index() {
@@ -12,6 +16,7 @@ export default function Index() {
   const [loading, setLoading] = useState(false);
   const [userHabits, setUserHabits] = useState<UserHabit[]>([]);
 
+  const today = new Date().toISOString().slice(0, 10);
   // const loadUserHabits = async () => {
   //   const result: UserHabit[] = await getUserHabits(user?.id || 0);
   //   setUserHabits(result);
@@ -44,48 +49,27 @@ export default function Index() {
     }
   };
 
-  // const [users, setUsers] = useState<User[]>([]);
-  // const [loading, setLoading] = useState(false);
+  const handleComplete = async (habit: object, habitId: number) => {
+    console.log(habit);
+    try {
+      await updateHabitStreak(habitId); // call database update
+      await fetchUserHabits(); // refresh UI
+      await console.log(habit);
+    } catch (error) {
+      console.error("Error updating streak:", error);
+    }
+  };
 
-  // const db = useSQLiteContext();
-
-  // const loadUsers = async () => {
-  //   if (!user?.email) return;
-
-  //   let isMounted = true;
-
-  //   try {
-  //     setLoading(true);
-  //     const result: User[] = await db.getAllAsync(
-  //       "SELECT * FROM usersHabits WHERE email = ? ORDER BY id DESC",
-  //       [user.email]
-  //     );
-  //     if (isMounted) setUsers(result);
-  //   } catch (error) {
-  //     if (isMounted) console.error("❌ Error fetching users:", error);
-  //   } finally {
-  //     if (isMounted) setLoading(false);
-  //   }
-
-  //   return () => {
-  //     isMounted = false;
-  //   };
-  // };
-
-  // // 👇 Load data on screen focus (every time user navigates back)
-  // useFocusEffect(
-  //   useCallback(() => {
-  //     loadUsers();
-  //   }, [user?.email])
-  // );
-  const handleDelete= async(habitId: number) => {
+  const handleDelete = async (habitId: number) => {
     try {
       await deleteUserHabit(habitId);
-      setUserHabits((prevHabits) => prevHabits.filter((habit) => habit.id !== habitId));
+      setUserHabits((prevHabits) =>
+        prevHabits.filter((habit) => habit.id !== habitId)
+      );
     } catch (error) {
       console.error("Error deleting habit:", error);
     }
-  }
+  };
 
   if (loading) {
     return (
@@ -95,13 +79,23 @@ export default function Index() {
     );
   }
 
+  const checkHabitCompleted = (habit: UserHabit) => {
+    return habit.last_completed === today;
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
         <Text variant="headlineSmall" style={styles.title}>
           Todays Habits
         </Text>
-        <Button mode="text" onPress={signOut} icon="logout">
+        <Button
+          mode="text"
+          onPress={signOut}
+          icon="logout"
+          labelStyle={{ color: "red", fontWeight: "bold" }}
+          style={{ borderColor: "red", borderWidth: 1, borderRadius: 5 }}
+        >
           Sign Out
         </Button>
       </View>
@@ -140,6 +134,19 @@ export default function Index() {
                   <View style={styles.frequencyBadge}>
                     <Text style={styles.frequencyText}>{habit.frequency}</Text>
                   </View>
+
+                  {checkHabitCompleted(habit) ? (
+                    <Text style={styles.completed}>Completed</Text>
+                  ) : (
+                    <Button
+                      compact
+                      onPress={() => handleComplete(habit, habit.id)}
+                      style={{  backgroundColor: "#4ADE80" }} 
+                      mode="contained"
+                    >
+                      Complete
+                    </Button>
+                  )}
                 </View>
               </View>
             </Surface>
@@ -160,7 +167,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: 28,
+    marginBottom: 20,
   },
   title: {
     fontWeight: "bold",
@@ -268,5 +275,11 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     marginBottom: 4,
-  }
+  },
+  completed: {
+    color: "#10B981", // green-500
+    fontSize: 12,
+    fontWeight: "bold",
+    opacity: 0.4,
+  },
 });

@@ -1,12 +1,12 @@
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Tabs } from "expo-router";
-import React, { useEffect } from 'react';
-import { getDatabase } from '../database/database';
+import React from 'react';
 
 export default function TabsLayout() {
-  useEffect(() => {
-    getDatabase();
-  }, []);
+  
+  // useEffect(() => {
+  //   getDatabase();
+  // }, []);
 
   return (
     <Tabs screenOptions={{ tabBarActiveTintColor: "tomato" }}>

@@ -11,6 +11,7 @@ import {
 import { useAuth } from "../authProvider";
 import { addUserHabit } from "../database/userHabitQueries";
 
+
 const FREQUENCIES = ["daily", "weekly", "monthly"];
 type Frequency = (typeof FREQUENCIES)[number];
 
@@ -33,7 +34,7 @@ export default function AddHabitScreen() {
       return Alert.alert("Error", "Title and description are required");
     }
 
-    const created_at = new Date().toISOString();
+    const created_at = new Date().toISOString().slice(0, 10);
     const last_completed = "not required";
 
     try {
@@ -41,7 +42,7 @@ export default function AddHabitScreen() {
         user_id: user.id,
         title,
         description,
-        frequency:'daily',
+        frequency,
         created_at,
         last_completed,
         streak_count: 0,
@@ -76,6 +77,12 @@ export default function AddHabitScreen() {
         value={description}
       />
 
+      {/* <TimeInput
+        isDisabled
+        defaultValue={new Time(11, 45)}
+        label="Event Time"
+      /> */}
+
       <View style={styles.frequencyContainer}>
         <SegmentedButtons
           value={frequency}
@@ -87,7 +94,11 @@ export default function AddHabitScreen() {
         />
       </View>
 
-      <Button mode="contained" disabled={!title || !description} onPress={handleSubmit}>
+      <Button
+        mode="contained"
+        disabled={!title || !description}
+        onPress={handleSubmit}
+      >
         Add Habit
       </Button>
 

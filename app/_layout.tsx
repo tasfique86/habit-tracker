@@ -1,12 +1,16 @@
 import { Stack, useRouter, useSegments } from "expo-router";
 import { useEffect } from "react";
 import AuthProvider, { useAuth } from "./authProvider";
+import { getDatabase } from "./database/database";
 
 function RouterGuard({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const segments = useSegments();
   const { user, isLoadingUser } = useAuth();
 
+  useEffect(() => {
+    getDatabase();
+  }, []);
   useEffect(() => {
     if (isLoadingUser) return;
 
