@@ -9,3 +9,9 @@ export interface UserHabit {
     reminder?: string; // Reminder for the habit, can be null
     created_at?: string; // Timestamp when the habit was created
 }
+export interface HabitCompletion {
+    id: number; 
+    user_id: string;    
+    habit_id: string;
+    completed_at?: string; // ISO date string 
+}

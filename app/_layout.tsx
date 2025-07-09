@@ -21,7 +21,7 @@ function RouterGuard({ children }: { children: React.ReactNode }) {
     } else if (user && isAuthRoute) {
       router.replace("/");
     }
-  }, [user, segments, isLoadingUser]);
+  }, [user, segments, isLoadingUser,router]);
 
   // Don't render anything until user loading is done
   if (isLoadingUser) return null;

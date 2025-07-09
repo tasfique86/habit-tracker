@@ -7,7 +7,7 @@ export async function getDatabase(): Promise<SQLite.SQLiteDatabase> {
 
   try {
     db = await SQLite.openDatabaseAsync('habitTracker.db');
-    await db.execAsync(`PRAGMA foreign_keys = ON;`); // ✅ Ensure foreign key support
+     await db.execAsync(`PRAGMA foreign_keys = ON;`); // ✅ Ensure foreign key support
     await db.execAsync(`PRAGMA journal_mode = WAL;`);
 
     // Main habits table
@@ -49,7 +49,12 @@ export async function getDatabase(): Promise<SQLite.SQLiteDatabase> {
     `);
 
     console.log("✅ Database initialized with usersHabits and completedHabit");
+    
+
     return db;
+
+
+
   } catch (error) {
     console.error("❌ Error opening or initializing DB:", error);
     throw error;
