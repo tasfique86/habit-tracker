@@ -6,5 +6,6 @@ export interface UserHabit {
     streak_count?: number; // Number of consecutive days the habit has been completed
     last_completed?: string; // Date when the habit was last completed
     frequency?: 'daily' | 'weekly' | 'monthly'; // Frequency of the habit
+    reminder?: string; // Reminder for the habit, can be null
     created_at?: string; // Timestamp when the habit was created
 }
