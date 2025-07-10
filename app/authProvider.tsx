@@ -44,6 +44,13 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
 
   const signUp = async (email: string, password: string) => {
     try {
+
+      const existing = await axios.get(`${API_URL}?email=${email}`);
+      if (existing.data.length > 0) {
+        return 'Email already exists';
+      }
+
+
       const res = await axios.post(API_URL, { email, password });
       await AsyncStorage.setItem('users', JSON.stringify(res.data));
       setUser(res.data);

@@ -98,7 +98,7 @@ export default function Index() {
     console.log((today.getTime() - lastDate.getTime()) / (1000 * 60 * 60 * 24))
     const diff = Math.floor((today.getTime() - lastDate.getTime()) / (1000 * 60 * 60 * 24));
   
-    console.log(`Difference in days for [${habit.frequency}]:`, diff);
+    // console.log(`Difference in days for [${habit.frequency}]:`, diff);
   
     if (habit.frequency === "weekly") {
       return diff < 7;
