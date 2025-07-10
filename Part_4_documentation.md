@@ -80,6 +80,11 @@ AUTOINCREMENT,
 
 
 > 4 Notification Flow with FCM
+> Send a daily notification to all users of the Habit Tracker app from Firebase.
+
+
+
+
 >
 > 5 Assumptions, Corner Cases, and Improvements
 >
