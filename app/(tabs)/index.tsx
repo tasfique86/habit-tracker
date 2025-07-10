@@ -2,7 +2,7 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useFocusEffect } from "@react-navigation/native";
 import { useCallback, useEffect, useState } from "react";
 import { ActivityIndicator, ScrollView, StyleSheet, View } from "react-native";
-import { Button, Surface, Text } from "react-native-paper";
+import { Button, SegmentedButtons, Surface, Text } from "react-native-paper";
 import { useAuth } from "../authProvider";
 import {
   deleteUserHabit,
@@ -11,10 +11,15 @@ import {
 } from "../database/userHabitQueries";
 import { UserHabit } from "../types/userHabit";
 
+const FREQUENCIES = ["daily", "weekly", "monthly"] as const;
+type Frequency = (typeof FREQUENCIES)[number];
+
 export default function Index() {
   const { signOut, user } = useAuth();
   const [loading, setLoading] = useState(false);
   const [userHabits, setUserHabits] = useState<UserHabit[]>([]);
+
+  const [frequency, setFrequency] = useState<Frequency>("daily");
 
   const today = new Date().toISOString().slice(0, 10);
   // const loadUserHabits = async () => {
@@ -33,28 +38,36 @@ export default function Index() {
   useEffect(() => {
     if (user) {
       fetchUserHabits();
+      // sortByCompletedhabits(userHabits);
     }
   }, [user]);
 
-  const fetchUserHabits = async () => {
+  useEffect(() => {
+    if (user) {
+      refilterHabits();
+    }
+  }, [frequency]);
+
+  const refilterHabits = async () => {
     if (!user?.id) return;
-    setLoading(true);
+   // setLoading(true);
     try {
       const habits = await getUserHabits(user.id);
-      setUserHabits(habits);
+      const filtered = filterFrequencyHabits(habits, frequency);
+      const sorted = sortByCompletedhabits(filtered);
+      setUserHabits(sorted);
     } catch (error) {
-      console.error("Error fetching user habits:", error);
-    } finally {
-      setLoading(false);
+      console.error("Error filtering habits by frequency:", error);
     }
   };
+
+ 
 
   const handleComplete = async (habit: object, habitId: number) => {
     console.log(habit);
     try {
       await updateHabitStreak(habitId); // call database update
       await fetchUserHabits(); // refresh UI
-      await console.log(habit);
     } catch (error) {
       console.error("Error updating streak:", error);
     }
@@ -80,12 +93,61 @@ export default function Index() {
   }
 
   const checkHabitCompleted = (habit: UserHabit) => {
-    return habit.last_completed === today;
+    const lastDate = new Date(habit.last_completed);
+    const today = new Date();
+    console.log((today.getTime() - lastDate.getTime()) / (1000 * 60 * 60 * 24))
+    const diff = Math.floor((today.getTime() - lastDate.getTime()) / (1000 * 60 * 60 * 24));
+  
+    console.log(`Difference in days for [${habit.frequency}]:`, diff);
+  
+    if (habit.frequency === "weekly") {
+      return diff < 7;
+    } else if (habit.frequency === "monthly") {
+      return diff < 30; 
+    } else {
+      return diff < 1;
+    }
+    
+  //  return habit.last_completed === today; 
+
   };
+  
+
+  const sortByCompletedhabits = (habits: UserHabit[]) => {
+    return habits.sort((a, b) => {
+      const aCompleted = a.last_completed === today ? 1 : 0;
+      const bCompleted = b.last_completed === today ? 1 : 0;
+      return aCompleted - bCompleted; // ✅ completed habits last
+    });
+  };
+
+  const filterFrequencyHabits = (habits: UserHabit[], frequency: Frequency) => {
+    // console.log("Filtering habits by frequency:", frequency);
+    return habits.filter((habit) => habit.frequency === frequency);
+  };
+
+
+
+  const fetchUserHabits = async () => {
+    if (!user?.id) return;
+    setLoading(true);
+    try {
+      const habits = await getUserHabits(user.id);
+      const filtered = filterFrequencyHabits(habits, frequency);
+      const sorted = sortByCompletedhabits(filtered);
+      setUserHabits(sorted);
+    } catch (error) {
+      console.error("Error fetching user habits:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // setUserHabits(sortByCompletedhabits(userHabits));
 
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
+      {/* <View style={styles.header}>
         <Text variant="headlineSmall" style={styles.title}>
           Todays Habits
         </Text>
@@ -98,6 +160,19 @@ export default function Index() {
         >
           Sign Out
         </Button>
+      </View> */}
+
+      <View style={styles.frequencyContainer}>
+        <SegmentedButtons
+          value={frequency}
+          onValueChange={(value) => {
+            setFrequency(value as Frequency);
+          }}
+          buttons={FREQUENCIES.map((freq) => ({
+            value: freq,
+            label: freq,
+          }))}
+        />
       </View>
       <ScrollView showsVerticalScrollIndicator={false}>
         {userHabits?.length === 0 ? (
@@ -141,7 +216,7 @@ export default function Index() {
                     <Button
                       compact
                       onPress={() => handleComplete(habit, habit.id)}
-                      style={{  backgroundColor: "#4ADE80" }} 
+                      style={{ backgroundColor: "#4ADE80" }}
                       mode="contained"
                     >
                       Complete
@@ -161,7 +236,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-    backgroundColor: "#F9FAFB", // soft gray-blue background
+    backgroundColor: "#f5f5f5", // soft gray-blue background
   },
   header: {
     flexDirection: "row",
@@ -173,6 +248,11 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     fontSize: 22,
     color: "#1E293B", // dark blue-gray
+  },
+  frequencyContainer: {
+    marginBottom: 24,
+    borderRadius: 8,
+    overflow: "hidden",
   },
   card: {
     marginBottom: 16,

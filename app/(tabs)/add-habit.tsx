@@ -39,7 +39,7 @@ export default function AddHabitScreen() {
     }
 
     const created_at = new Date().toISOString().slice(0, 10);
-    const last_completed = "not required";
+    const last_completed = "00-00-00"; 
 
     try {
       const formattedReminder = reminder
@@ -161,11 +161,11 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-    backgroundColor: "#ffffff",
+    backgroundColor:  "#f5f5f5",
   },
   input: {
     marginBottom: 16,
-    backgroundColor: "#ffffff", // ensures paper inputs are white
+    // backgroundColor: "#ffffff", // ensures paper inputs are white
   },
   timePicker: {
     borderWidth: 1,
