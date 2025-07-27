@@ -50,7 +50,7 @@ export default function Index() {
 
   const refilterHabits = async () => {
     if (!user?.id) return;
-   // setLoading(true);
+   
     try {
       const habits = await getUserHabits(user.id);
       const filtered = filterFrequencyHabits(habits, frequency);
@@ -95,7 +95,7 @@ export default function Index() {
   const checkHabitCompleted = (habit: UserHabit) => {
     const lastDate = new Date(habit.last_completed);
     const today = new Date();
-    console.log((today.getTime() - lastDate.getTime()) / (1000 * 60 * 60 * 24))
+    //  console.log((today.getTime() - lastDate.getTime()) / (1000 * 60 * 60 * 24))
     const diff = Math.floor((today.getTime() - lastDate.getTime()) / (1000 * 60 * 60 * 24));
   
     // console.log(`Difference in days for [${habit.frequency}]:`, diff);
@@ -216,7 +216,7 @@ export default function Index() {
                     <Button
                       compact
                       onPress={() => handleComplete(habit, habit.id)}
-                      style={{ backgroundColor: "#4ADE80" }}
+                      style={{ backgroundColor: "#166534" }}
                       mode="contained"
                     >
                       Complete
@@ -357,7 +357,7 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   completed: {
-    color: "#10B981", // green-500
+    color: "#166534", // green-500
     fontSize: 12,
     fontWeight: "bold",
     opacity: 0.4,

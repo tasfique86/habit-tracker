@@ -1,10 +1,7 @@
+import { API_URL } from '@/lib/api'; // Ensure you have this set in your .env file
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import React, { createContext, useEffect, useState } from 'react';
-
-
-const API_URL = 'http://192.168.0.140:3000/users'; 
-
 
 type User = {
   id: number;

@@ -1,7 +1,22 @@
+import { NotificationProvider } from "@/context/NotificationContext";
+import * as Notifications from "expo-notifications";
 import { Stack, useRouter, useSegments } from "expo-router";
 import { useEffect } from "react";
 import AuthProvider, { useAuth } from "./authProvider";
 import { getDatabase } from "./database/database";
+
+
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: true,
+    shouldSetBadge: true,
+    shouldShowBanner: true, // ✅ required for iOS 15+
+    shouldShowList: true    // ✅ required for iOS 15+
+  }),
+});
+
+
 
 function RouterGuard({ children }: { children: React.ReactNode }) {
   const router = useRouter();
@@ -31,7 +46,8 @@ function RouterGuard({ children }: { children: React.ReactNode }) {
 
 export default function RootLayout() {
   return (
-    <AuthProvider>
+    <NotificationProvider>
+      <AuthProvider>
       <RouterGuard>
         <Stack>
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
@@ -39,5 +55,6 @@ export default function RootLayout() {
         </Stack>
       </RouterGuard>
     </AuthProvider>
+    </NotificationProvider>
   );
 }
