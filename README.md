@@ -1,50 +1,104 @@
-# Welcome to your Expo app 👋
+# 📱 Habit Tracker App
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+A React Native app to help you build and track daily habits. Features include login/logout, habit creation, SQLite-based tracking, push notifications via Firebase Cloud Messaging (FCM), and streak history.
 
-## Get started
+---
 
-1. Install dependencies
+## 🚀 Features
 
-   ```bash
-   npm install
-   ```
+- ✅ User Authentication (Mock Server)
+- 📅 Daily Habit Scheduling
+- 🔔 Push Notifications via Firebase
+- 📊 Streak & Completion Tracking
+- 🧠 SQLite for Local Habit Storage
+- 🎯 Automatic Daily Reset of Habits
 
-2. Start the app
+---
 
-   ```bash
-   npx expo start
-   ```
+## 🛠️ Technologies Used
 
-In the output, you'll find options to open the app in a
+- React Native (Expo)
+- TypeScript
+- SQLite (`expo-sqlite`)
+- Firebase Cloud Messaging (`@react-native-firebase/messaging`)
+- Express (for backend scheduling)
+- Node.js + Firebase Admin SDK
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+---
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+## 📦 Project Setup
 
-## Get a fresh project
-
-When you're ready, run:
+### 1️⃣ Clone the Repository
 
 ```bash
-npm run reset-project
+git clone https://github.com/tasfique86/habit-tracker.git
+cd habit-tracker
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+---
 
-## Learn more
+### 2️⃣ Install Dependencies & Start the App
 
-To learn more about developing your project with Expo, look at the following resources:
+```bash
+npm install
+npx expo start
+```
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+> 📱 Now scan the QR code with the **Expo Go app** on your Android or iOS device to run the app.
 
-## Join the community
+---
 
-Join our community of developers creating universal apps.
+### 3️⃣ Setup Mock Authentication Server
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+The app uses a mock server to simulate user authentication.
+
+#### 👉 Step 1: Create `db.json`
+
+In the root of your project, create a file called `db.json` and add the following content:
+
+```json
+{
+  "users": [
+    {
+      "id": "9017",
+      "email": "tasfique1217@gmail.com",
+      "password": "123456789"
+    }
+  ]
+}
+```
+
+#### 👉 Step 2: Install JSON Server
+
+```bash
+npm install json-server
+```
+
+#### 👉 Step 3: Start the Server
+
+```bash
+npx json-server db.json --watch --port 3000
+```
+
+> This will start your mock API at: `http://192.168.0.140:3000/users`
+
+---
+
+## ✅ You're All Set!
+
+- Start the React Native app with `npx expo start`
+- Start the mock backend with `npx json-server db.json`
+- Log in using the credentials from your mock database
+- Start adding habits, setting reminders, and tracking your streaks!
+
+---
+
+## 📄 License
+
+This project is licensed under the MIT License.
+
+---
+
+## ✨ Author
+
+Developed by [@tasfique86](https://github.com/tasfique86)
