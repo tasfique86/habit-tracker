@@ -1,10 +1,11 @@
 import { NotificationProvider } from "@/context/NotificationContext";
+import { requestNotificationPermission } from "@/utils/localNotification";
 import * as Notifications from "expo-notifications";
 import { Stack, useRouter, useSegments } from "expo-router";
 import { useEffect } from "react";
+import { Alert } from "react-native";
 import AuthProvider, { useAuth } from "./authProvider";
 import { getDatabase } from "./database/database";
-
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -25,6 +26,10 @@ function RouterGuard({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     getDatabase();
+    requestNotificationPermission().catch((error) => {
+      console.error("Error requesting notification permission:", error);
+      Alert.alert("Error", "Failed to request notification permission.");
+    });
   }, []);
   useEffect(() => {
     if (isLoadingUser) return;
@@ -58,3 +63,5 @@ export default function RootLayout() {
     </NotificationProvider>
   );
 }
+
+

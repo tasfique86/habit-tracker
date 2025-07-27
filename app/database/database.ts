@@ -21,6 +21,7 @@ export async function getDatabase(): Promise<SQLite.SQLiteDatabase> {
         last_completed TEXT,
         frequency TEXT DEFAULT 'daily',
         reminder TEXT NOT NULL,
+        notificationId TEXT NOT NULL,
         created_at TEXT DEFAULT (datetime('now', 'localtime'))
       );
     `);

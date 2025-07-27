@@ -1,5 +1,6 @@
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import DateTimePicker from "@react-native-community/datetimepicker";
+import * as Notifications from "expo-notifications";
 import { useRouter } from "expo-router";
 import { useState } from "react";
 import { Alert, Platform, Pressable, StyleSheet, View } from "react-native";
@@ -29,26 +30,51 @@ export default function AddHabitScreen() {
   const router = useRouter();
   const theme = useTheme();
 
+
+
+
+
+  
   const handleSubmit = async () => {
     if (!user) {
       return Alert.alert("Error", "You must be logged in to add a habit");
     }
-
+  
     if (!title || !description || !reminder) {
-      return Alert.alert("Error", "Title and description are required");
+      return Alert.alert("Error", "Title, description, and reminder time are required");
     }
-
+  
     const created_at = new Date().toISOString().slice(0, 10);
-    const last_completed = "00-00-00"; 
-
+    const last_completed = "00-00-00";
+  
+    const formattedReminder = reminder.toLocaleTimeString([], {
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: true,
+    });
+  
+    // Calculate the first future date-time for the reminder
+    const now = new Date();
+    const firstTrigger = new Date();
+    firstTrigger.setHours(reminder.getHours());
+    firstTrigger.setMinutes(reminder.getMinutes());
+    firstTrigger.setSeconds(0);
+    firstTrigger.setMilliseconds(0);
+  
+    // if the time already passed today, set for tomorrow
+    if (firstTrigger <= now) {
+      firstTrigger.setDate(firstTrigger.getDate() + 1);
+    }
+  
     try {
-      const formattedReminder = reminder
-        ? reminder.toLocaleTimeString([], {
-            hour: "2-digit",
-            minute: "2-digit",
-            hour12: true,
-          })
-        : undefined;
+      const notificationId = await Notifications.scheduleNotificationAsync({
+        content: {
+          title: title.trim(),
+          body: `Reminder at ${formattedReminder}`,
+        },
+        trigger: firstTrigger, // 👈 precise future Date, no immediate trigger
+      });
+  
       await addUserHabit({
         user_id: user.id,
         title,
@@ -57,21 +83,97 @@ export default function AddHabitScreen() {
         created_at,
         last_completed,
         reminder: formattedReminder,
+        notificationId,
         streak_count: 0,
       });
-
+  
       setTitle("");
       setDescription("");
       setFrequency("daily");
       setReminder(null);
-
+  
       Alert.alert("Success", "Habit added successfully");
-      router.back(); // ✅ Go back to index
+      // router.back();
     } catch (error: any) {
       console.error("Error adding habit:", error);
       setError(error.message || "An error occurred while adding the habit");
     }
   };
+  
+
+  
+
+
+  // const handleSubmit = async () => {
+  //   if (!user) {
+  //     return Alert.alert("Error", "You must be logged in to add a habit");
+  //   }
+
+  //   if (!title || !description || !reminder) {
+  //     return Alert.alert("Error", "Title and description are required");
+  //   }
+
+  //   const created_at = new Date().toISOString().slice(0, 10);
+  //   const last_completed = "00-00-00"; 
+
+  //   const triggerDate = new Date(reminder);
+  //   const hours = triggerDate.getHours();
+  //   const minutes = triggerDate.getMinutes();
+
+  //   const formattedReminder = reminder
+  //       ? reminder.toLocaleTimeString([], {
+  //           hour: "2-digit",
+  //           minute: "2-digit",
+  //           hour12: true,
+  //         })
+  //       : undefined;
+
+  //   const notificationId = await Notifications.scheduleNotificationAsync({
+  //     content: {
+  //       title: title.trim(),
+  //       body: `Reminder at ${triggerDate.toLocaleTimeString([], {
+  //         hour: "2-digit",
+  //         minute: "2-digit",
+  //         hour12: true,
+  //       })}`,
+  //     },
+  //     trigger: {
+  //       hour: hours,
+  //       minute: minutes,
+  //       repeats: true,
+  //     },
+  //   });
+
+
+  //   try {
+      
+  //     if(notificationId === null) {
+  //       throw new Error("Failed to schedule notification");
+  //     }
+  //     await addUserHabit({
+  //       user_id: user.id,
+  //       title,
+  //       description,
+  //       frequency,
+  //       created_at,
+  //       last_completed,
+  //       reminder: formattedReminder,
+  //       notificationId,
+  //       streak_count: 0,
+  //     });
+
+  //     setTitle("");
+  //     setDescription("");
+  //     setFrequency("daily");
+  //     setReminder(null);
+
+  //     Alert.alert("Success", "Habit added successfully");
+  //     router.back(); // ✅ Go back to index8
+  //   } catch (error: any) {
+  //     console.error("Error adding habit:", error);
+  //     setError(error.message || "An error occurred while adding the habit");
+  //   }
+  // };
 
   return (
     <View style={styles.container}>

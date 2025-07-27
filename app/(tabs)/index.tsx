@@ -1,5 +1,6 @@
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useFocusEffect } from "@react-navigation/native";
+import * as Notifications from "expo-notifications";
 import { useCallback, useEffect, useState } from "react";
 import { ActivityIndicator, ScrollView, StyleSheet, View } from "react-native";
 import { Button, SegmentedButtons, Surface, Text } from "react-native-paper";
@@ -75,7 +76,10 @@ export default function Index() {
 
   const handleDelete = async (habitId: number) => {
     try {
-      await deleteUserHabit(habitId);
+      const notificationID= await deleteUserHabit(habitId);
+      if (notificationID) {
+        await Notifications.cancelScheduledNotificationAsync(notificationID);
+      }
       setUserHabits((prevHabits) =>
         prevHabits.filter((habit) => habit.id !== habitId)
       );
@@ -185,15 +189,20 @@ export default function Index() {
           userHabits.map((habit, key) => (
             <Surface key={key} style={styles.card}>
               <View style={styles.cardContent}>
-                <View style={styles.cardHeader}>
-                  <Text style={styles.cardTitle}>{habit.title}</Text>
-                  <MaterialCommunityIcons
-                    name="trash-can-outline"
-                    size={22}
-                    color="red"
-                    onPress={() => handleDelete(habit.id)}
-                  />
-                </View>
+              <View style={styles.cardHeader}>
+  <Text style={styles.cardTitle}>{habit.title}</Text>
+
+  <View style={styles.cardRight}>
+    <Text style={styles.reminderText}>{habit.reminder}</Text>
+    <MaterialCommunityIcons
+      name="trash-can-outline"
+      size={22}
+      color="red"
+      onPress={() => handleDelete(habit.id)}
+    />
+  </View>
+</View>
+
                 <Text style={styles.cardDescription}>{habit.description}</Text>
                 <View style={styles.cardFooter}>
                   <View style={styles.streakBadge}>
@@ -362,4 +371,17 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     opacity: 0.4,
   },
+
+  cardRight: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8, // or use marginRight in reminderText
+  },
+  
+  reminderText: {
+    fontSize: 14,
+    color: "#666",
+    marginRight: 8, // spacing between time and icon
+  },
+
 });

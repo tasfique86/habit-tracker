@@ -14,13 +14,14 @@ export async function addUserHabit(
       last_completed = null,
       frequency = "daily",
       reminder = null,
+      notificationId,
       created_at = new Date().toISOString(),
     } = habit;
 
     await db.runAsync(
       `
-    INSERT INTO usersHabits (user_id, title, description, streak_count, last_completed, frequency,reminder, created_at)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+    INSERT INTO usersHabits (user_id, title, description, streak_count, last_completed, frequency,reminder,notificationId, created_at)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
     `,
       [
         user_id,
@@ -30,6 +31,7 @@ export async function addUserHabit(
         last_completed,
         frequency,
         reminder,
+        notificationId,
         created_at,
       ]
     );
@@ -67,15 +69,24 @@ export async function getUserHabitsWithStreak(userId: number): Promise<UserHabit
   }
 }
 
-export async function deleteUserHabit(habitId: number): Promise<void> {
+export async function deleteUserHabit(habitId: number): Promise<string | undefined> {
   try {
     const db = await getDatabase();
-    await db.runAsync(`DELETE FROM usersHabits WHERE id = ?`, habitId);
+    
+    const result = await db.getFirstAsync(
+      `SELECT notificationId FROM usersHabits WHERE id = ?`,
+      [habitId]
+    ) as { notificationId?: string } | null;
+
+    await db.runAsync(`DELETE FROM usersHabits WHERE id = ?`, [habitId]);
+
+    return result?.notificationId ?? undefined; // Return the notificationId if it exists
   } catch (error) {
     console.error("Failed to delete habit:", error);
-    throw error; // or handle it as you prefer
+    throw error;
   }
 }
+
 
 export async function updateHabitStreak(habitId: number): Promise<void> {
   try {
