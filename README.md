@@ -4,47 +4,77 @@ This is an [Expo](https://expo.dev) project created with [`create-expo-app`](htt
 
 ## Get started
 
-1. Install dependencies
+🛠️ Setup Instructions
+Follow these steps to set up and run the project locally:
 
-   ```bash
-   npm install
-   ```
+1. Clone the repository
 
-2. Start the app
+https://github.com/tasfique86/habit-tracker.git
+cd habit-tracker
 
-   ```bash
-   npx expo start
-   ```
+2. Install dependencies
+Make sure you have Node.js and Expo CLI installed.
 
-In the output, you'll find options to open the app in a
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+npm install
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+3. Setup Firebase
+Go to Firebase Console
 
-## Get a fresh project
+Create a project → Add Android app → Download google-services.json
 
-When you're ready, run:
+Place the google-services.json file inside the root of your project or under the app directory as configured.
 
-```bash
-npm run reset-project
-```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+4. Set up Local Database (SQLite)
 
-## Learn more
+The SQLite database is automatically created on app launch.
+No manual setup is required.
+Data is stored locally on the device using expo-sqlite.
 
-To learn more about developing your project with Expo, look at the following resources:
+5. Enable Push Notifications
+Install Expo Go on a physical Android device (FCM does not work on emulators).
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+Log in to your Expo account in the terminal:
 
-## Join the community
+npx expo login
+Configure FCM by following Expo Push Notifications guide.
 
-Join our community of developers creating universal apps.
+Make sure eas.json is correctly set up for the development build.
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+6. Run the project
+Option A: Using development build
+npx expo run:android
+
+Option B: Using Expo Go (limitations apply)
+
+npx expo start
+
+⚠️ Firebase Cloud Messaging won't work in Expo Go. Use a dev build instead.
+
+7. JSON Server for Authentication
+If using JSON Server for mock login/logout:
+
+npm install -g json-server
+json-server --watch db.json --port 3001
+Update API endpoints in your code as needed (e.g., http://localhost:3001/users).
+
+
+
+✅ Features Checklist
+ User Authentication (mock server)
+
+ Add
+ 
+ Delete Habit
+
+ Streak Counter
+
+ Filter by Frequency (Daily/Weekly/Monthly)
+
+ Local Notifications (Daily Reminder)
+
+ Push Notification with FCM ( for global user)
+
+ SQLite-based persistent storage
+
