@@ -71,6 +71,9 @@ export default function AddHabitScreen() {
         content: {
           title: title.trim(),
           body: `Reminder at ${formattedReminder}`,
+          data:{
+            habitTitle: title.trim(),
+          }
         },
         trigger: firstTrigger, // 👈 precise future Date, no immediate trigger
       });

@@ -1,7 +1,7 @@
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useFocusEffect } from "@react-navigation/native";
 import * as Notifications from "expo-notifications";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { ActivityIndicator, ScrollView, StyleSheet, View } from "react-native";
 import { Button, SegmentedButtons, Surface, Text } from "react-native-paper";
 import { useAuth } from "../authProvider";
@@ -12,21 +12,52 @@ import {
 } from "../database/userHabitQueries";
 import { UserHabit } from "../types/userHabit";
 
+import { useLocalSearchParams } from "expo-router";
+
 const FREQUENCIES = ["daily", "weekly", "monthly"] as const;
 type Frequency = (typeof FREQUENCIES)[number];
 
+const CARD_HEIGHT = 120; // Adjust this to your actual card height (px)
+
 export default function Index() {
+
+
   const { signOut, user } = useAuth();
   const [loading, setLoading] = useState(false);
   const [userHabits, setUserHabits] = useState<UserHabit[]>([]);
 
   const [frequency, setFrequency] = useState<Frequency>("daily");
-
   const today = new Date().toISOString().slice(0, 10);
+
+// Highlight habit from notification
+const [highlightedId, setHighlightedId] = useState<string | null>(null);
+
+const scrollRef = useRef<ScrollView>(null);
+const params = useLocalSearchParams();
+const highlightHabitId = String(params.highlightHabit);
+
+useEffect(() => {
+  if (highlightHabitId && userHabits.length > 0) {
+    const index = userHabits.findIndex(h => h.title === highlightHabitId);
+    if (index !== -1 && scrollRef.current) {
+      scrollRef.current.scrollTo({ y: index * CARD_HEIGHT, animated: true });
+      setHighlightedId(highlightHabitId);
+      setTimeout(() => {
+        setHighlightedId(null);
+      }, 3000);
+    }
+  }
+}, [highlightHabitId, userHabits]);
+
+
   // const loadUserHabits = async () => {
   //   const result: UserHabit[] = await getUserHabits(user?.id || 0);
   //   setUserHabits(result);
   // }
+
+
+
+
 
   useFocusEffect(
     useCallback(() => {
@@ -178,7 +209,7 @@ export default function Index() {
           }))}
         />
       </View>
-      <ScrollView showsVerticalScrollIndicator={false}>
+      <ScrollView ref={scrollRef}  showsVerticalScrollIndicator={false}>
         {userHabits?.length === 0 ? (
           <View style={styles.emptyState}>
             <Text style={styles.emptyStateText}>
@@ -187,7 +218,7 @@ export default function Index() {
           </View>
         ) : (
           userHabits.map((habit, key) => (
-            <Surface key={key} style={styles.card}>
+            <Surface key={key} style={[[styles.card, highlightedId === habit.title && { borderColor: "#7c4dff", borderWidth: 2 },]]}>
               <View style={styles.cardContent}>
               <View style={styles.cardHeader}>
   <Text style={styles.cardTitle}>{habit.title}</Text>

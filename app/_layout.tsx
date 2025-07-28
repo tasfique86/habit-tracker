@@ -31,6 +31,8 @@ function RouterGuard({ children }: { children: React.ReactNode }) {
       Alert.alert("Error", "Failed to request notification permission.");
     });
   }, []);
+
+
   useEffect(() => {
     if (isLoadingUser) return;
 
@@ -48,6 +50,25 @@ function RouterGuard({ children }: { children: React.ReactNode }) {
 
   return <>{children}</>;
 }
+
+
+//habit highlight
+// useEffect(() => {
+//   const subscription = Notifications.addNotificationResponseReceivedListener(
+//     response => {
+//       const habitId = response.notification.request.content.data.habitId;
+//       if (habitId) {
+//         // You can store this in global state or use a navigation param
+//         setTargetHabitId(habitId); // useContext or useState
+//       }
+//     }
+//   );
+
+//   return () => subscription.remove();
+// }, []);
+
+
+
 
 export default function RootLayout() {
   return (

@@ -1,12 +1,13 @@
 import { registerForPushNotificationsAsync } from "@/utils/registerForPushNotificationsAsync";
 import * as Notifications from "expo-notifications";
+import { router } from "expo-router";
 import React, {
-    createContext,
-    ReactNode,
-    useContext,
-    useEffect,
-    useRef,
-    useState,
+  createContext,
+  ReactNode,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
 } from "react";
   
   interface NotificationContextType {
@@ -59,6 +60,12 @@ import React, {
   
       responseListener.current =
         Notifications.addNotificationResponseReceivedListener((response) => {
+          const habitTitle = response.notification.request.content.data.habitTitle;
+
+          if( habitTitle) {
+            router.push({ pathname: "/", params: { highlightHabit: habitTitle } });
+          }
+
           console.log(
             "🔔 Notification Response: ",
             JSON.stringify(response, null, 2),
