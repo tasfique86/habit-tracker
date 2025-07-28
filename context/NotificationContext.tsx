@@ -60,7 +60,7 @@ import React, {
   
       responseListener.current =
         Notifications.addNotificationResponseReceivedListener((response) => {
-          const habitTitle = response.notification.request.content.data.habitTitle;
+          const habitTitle = response.notification.request.content.data.habitTitle as string | undefined;
 
           if( habitTitle) {
             router.push({ pathname: "/", params: { highlightHabit: habitTitle } });

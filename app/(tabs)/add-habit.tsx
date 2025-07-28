@@ -72,7 +72,7 @@ export default function AddHabitScreen() {
           title: title.trim(),
           body: `Reminder at ${formattedReminder}`,
           data:{
-            habitTitle: title.trim(),
+            habitTitle: title.trim() as string, // Ensure habitTitle is a string  
           }
         },
         trigger: firstTrigger, // 👈 precise future Date, no immediate trigger

@@ -36,18 +36,7 @@ const scrollRef = useRef<ScrollView>(null);
 const params = useLocalSearchParams();
 const highlightHabitId = String(params.highlightHabit);
 
-useEffect(() => {
-  if (highlightHabitId && userHabits.length > 0) {
-    const index = userHabits.findIndex(h => h.title === highlightHabitId);
-    if (index !== -1 && scrollRef.current) {
-      scrollRef.current.scrollTo({ y: index * CARD_HEIGHT, animated: true });
-      setHighlightedId(highlightHabitId);
-      setTimeout(() => {
-        setHighlightedId(null);
-      }, 3000);
-    }
-  }
-}, [highlightHabitId, userHabits]);
+
 
 
   // const loadUserHabits = async () => {
@@ -73,6 +62,20 @@ useEffect(() => {
       // sortByCompletedhabits(userHabits);
     }
   }, [user]);
+
+  useEffect(() => {
+    if (highlightHabitId && userHabits.length > 0) {
+      const index = userHabits.findIndex(h => h.title === highlightHabitId);
+      if (index !== -1 && scrollRef.current) {
+        scrollRef.current.scrollTo({ y: index * CARD_HEIGHT, animated: true });
+        setHighlightedId(highlightHabitId);
+        setTimeout(() => {
+          setHighlightedId(null);  
+        }, 3000);
+  
+      }
+    }
+  }, [highlightHabitId, userHabits]);
 
   useEffect(() => {
     if (user) {
